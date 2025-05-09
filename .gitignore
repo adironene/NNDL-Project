@@ -2,3 +2,4 @@ tensorflow/tf_files/train.record
 tensorflow/scripts/train.py
 tensorflow/scripts/valorant_detector_model/checkpoints/ckpt-1.data-00000-of-00001
 tensorflow/scripts/valorant_detector_model/checkpoints/ckpt-1.index
+tensorflow/scripts/inference.py
