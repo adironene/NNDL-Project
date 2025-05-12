@@ -24,12 +24,14 @@ def inspect_tfrecord(tfrecord_path):
     parsed_dataset = dataset.map(lambda example: tf.io.parse_single_example(
         example, feature_description))
     
+    file = open('../tf_files_description.txt', 'w')
     box_counts = []
     image_sizes = []
     class_distribution = {}
     
-    print(f"Analyzing TFRecord file: {tfrecord_path}")
-    print("=" * 20)
+    file.write(f"Analyzing TFRecord file: {tfrecord_path}\n")
+    file.write("=" * 20)
+    file.write("\n")
     
     count = 0
     for example in parsed_dataset:
@@ -57,10 +59,10 @@ def inspect_tfrecord(tfrecord_path):
         image_sizes.append((height, width))
         
         if count < 5:
-            print(f"Example {count+1}:")
-            print(f"  Filename: {filename}")
-            print(f"  Image size: {width}x{height}")
-            print(f"  Number of boxes: {num_boxes}")
+            file.write(f"Example {count+1}:\n")
+            file.write(f"  Filename: {filename}\n")
+            file.write(f"  Image size: {width}x{height}\n")
+            file.write(f"  Number of boxes: {num_boxes}\n")
             
             class_count = {}
             for i, cls in enumerate(class_labels):
@@ -69,24 +71,25 @@ def inspect_tfrecord(tfrecord_path):
                     class_count[cls_name] += 1
                 else:
                     class_count[cls_name] = 1
-            print(f"  Classes: {class_count}")
+            file.write(f"  Classes: {class_count}\n")
             
             for i in range(min(3, num_boxes)):
-                print(f"  Box {i+1}: [{xmins[i]:.4f}, {ymins[i]:.4f}, {xmaxs[i]:.4f}, {ymaxs[i]:.4f}], Class: {class_texts[i].decode('utf-8')}")
-            print("-" * 40)
+                file.write(f"  Box {i+1}: [{xmins[i]:.4f}, {ymins[i]:.4f}, {xmaxs[i]:.4f}, {ymaxs[i]:.4f}], Class: {class_texts[i].decode('utf-8')}\n")
+            file.write("-" * 40)
+            file.write("\n")
         
         count += 1
     
-    print("\nDataset Summary:")
-    print(f"Total number of examples: {count}")
-    print(f"Average number of boxes per image: {np.mean(box_counts):.2f}")
-    print(f"Min number of boxes: {np.min(box_counts)}")
-    print(f"Max number of boxes: {np.max(box_counts)}")
+    file.write("\nDataset Summary:\n")
+    file.write(f"Total number of examples: {count}\n")
+    file.write(f"Average number of boxes per image: {np.mean(box_counts):.2f}\n")
+    file.write(f"Min number of boxes: {np.min(box_counts)}\n")
+    file.write(f"Max number of boxes: {np.max(box_counts)}\n")
     
-    print("\nClass distribution:")
+    file.write("\nClass distribution:\n")
     for cls_id, count in class_distribution.items():
-        print(f"  Class {cls_id}: {count} instances")
-   
+        file.write(f"  Class {cls_id}: {count} instances\n")
+    file.close()
     return box_counts, image_sizes, class_distribution
 
 def main():
