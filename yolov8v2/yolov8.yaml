@@ -1,0 +1,8 @@
+path: /kaggle/working/inputdata/dataset
+train: /kaggle/working/inputdata/dataset/images/train
+val: /kaggle/working/inputdata/dataset/images/val
+test: /kaggle/working/inputdata/dataset/images/test
+
+names:
+  0: enemy
+  1: enemy_head
