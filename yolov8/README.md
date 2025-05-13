@@ -1,7 +1,10 @@
 ## Fine-Tuning Entire YOLOv8 Model
 This directory contains the code, files, and instructions necessary to replicate the results. 
+
 The dataset directory contains the data required for the training, validation, and testing sets in the format that the YOLO models expect.
+
 The runs/detect directory contains the results produced from training and testing the YOLOv8 model.
+
 The weights directory contains the initial pre-trained weights(yolov8n.pt) for the YOLOv8 model.
 
 ## Requirements
@@ -26,5 +29,6 @@ To train and test the model, upload all the items in this directory to the worki
 
 ## Results
 From Test Data
+
 ![image](./runs/detect/test/test_results/clip2--22-_jpg.rf.323f14e088419ae6722fe1a8fa4c2fca.jpg)
 ![image](./runs/detect/test/test_results/img_293_jpg.rf.ca6ba2d0d0f30b8664f88a10c7b9bc6d.jpg)
