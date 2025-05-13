@@ -22,7 +22,7 @@ python generate_dataset.py
 - **Learning Rate**: 1e-3
 
 ## Usage 
-To train the model, upload the directory to the working directory provided in Kaggle notebooks. Enable the usage of a GPU. Install the required dependencies. Ensure the file structure assumed in the yolov8.yaml matches the structure of the uploaded files in Kaggle and what's assumed in the code in kaggle_notebook.ipynb. Execute each cell in kaggle_notebook.ipynb sequentially. When executing the cells, the runs/detect directory will be created relative to the current directory you are currently inside in Kaggle.
+To train and test the model, upload all the items in this directory to the working directory provided in the Kaggle notebooks. Enable the usage of a GPU. Install the required dependencies. Ensure the file structure assumed in yolov8.yaml and the kaggle_notebook.ipynb file matches the structure of the uploaded files in Kaggle. Execute each cell in kaggle_notebook.ipynb sequentially. When executing the cells, the runs/detect directory containing the results will be created relative to the current directory you are currently inside in Kaggle.
 
 ## Results
 From Test Data
