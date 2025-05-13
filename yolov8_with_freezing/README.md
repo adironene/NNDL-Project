@@ -18,7 +18,7 @@ To generate dataset in required format for YOLOv8
 python generate_dataset.py
 ```
 
-We trained the YOLOv8 model with 6 different configurations: freezing the first 4, 5, 6, 7, 8, 9 layers of the YOLOv8 model. The model that performed the best ended up being the configuration for the YOLOv8 model where the first 4 layers were frozen. We only tested this configuration of the YOLOv8 model to produce the testing results.
+We trained the YOLOv8 model with 6 different configurations: freezing the first 4, 5, 6, 7, 8, 9 layers of the YOLOv8 model. The model that performed the best ended up being the configuration for the YOLOv8 model where the first 4 layers were frozen. We only tested this configuration of the fine-tuned YOLOv8 model to produce the testing results.
 
 ## Training Configuration
 
@@ -30,7 +30,7 @@ We trained the YOLOv8 model with 6 different configurations: freezing the first 
 To reproduce the results, upload all the items in this directory to the working directory provided in the Kaggle notebooks. Enable the usage of a GPU. Install the required dependencies. Ensure the file structure assumed in yolov8.yaml and the kaggle_notebook.ipynb file matches the structure of the uploaded files in Kaggle. Execute each cell in kaggle_notebook.ipynb sequentially. When executing the cells, the runs/detect directory containing the results will be created relative to the current directory you are currently inside in Kaggle.
 
 ## Results
-The best performing model ended up being the configuration for the YOLOv8 model where the first 4 layers were frozen.
+The best performing model ended up being the configuration for the fine-tuned YOLOv8 model where the first 4 layers were frozen.
 
 From Test Data for best model
 
