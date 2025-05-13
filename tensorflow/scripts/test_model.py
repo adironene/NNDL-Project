@@ -31,29 +31,36 @@ def load_model(model_path):
 def preprocess_image(image_path):
     """
     Load and preprocess an image for inference.
+    Returns both the preprocessed tensor and the original image array.
     """
     print(f"Processing image: {image_path}")
     try:
-        image = tf.keras.preprocessing.image.load_img(image_path, target_size=IMAGE_SIZE)
-        image_array = tf.keras.preprocessing.image.img_to_array(image)
+        original_image = tf.keras.preprocessing.image.load_img(image_path)
+        original_array = tf.keras.preprocessing.image.img_to_array(original_image)
+
+        model_image = tf.keras.preprocessing.image.load_img(image_path, target_size=IMAGE_SIZE)
+        model_array = tf.keras.preprocessing.image.img_to_array(model_image)
     except Exception as e:
         print(f"TensorFlow image loading failed: {str(e)}")
         try:
-            image = Image.open(image_path).convert('RGB')
-            image = image.resize(IMAGE_SIZE)
-            image_array = np.array(image)
+            original_image = Image.open(image_path).convert('RGB')
+            original_array = np.array(original_image)
+
+            model_image = original_image.resize(IMAGE_SIZE)
+            model_array = np.array(model_image)
         except Exception as e2:
             print(f"PIL image loading also failed: {str(e2)}")
             raise e2
 
-    image_array = image_array / 255.0
-    image_tensor = tf.expand_dims(image_array, 0)
+    model_array_normalized = model_array / 255.0
+    model_tensor = tf.expand_dims(model_array_normalized, 0)
     
-    return image_tensor, image_array
+    return model_tensor, original_array
 
 def post_process_detections(y_pred, confidence_threshold=0.4, iou_threshold=0.45):
     """
     Convert model predictions to bounding boxes with NMS.
+    Returns boxes in normalized coordinates (0-1).
     """
     S = 13
     B = 3
@@ -121,13 +128,18 @@ def post_process_detections(y_pred, confidence_threshold=0.4, iou_threshold=0.45
 def visualize_detections(image_array, boxes, scores, class_ids, output_path=None, show_plot=True):
     """
     Visualize detection results on an image.
+    Image should be in its original size.
     """
     if image_array.max() <= 1.0:
         image_np = (image_array * 255).astype(np.uint8)
     else:
         image_np = image_array.astype(np.uint8)
 
-    fig, ax = plt.subplots(1, figsize=(12, 9))
+    height, width = image_np.shape[:2]
+    fig_width = 12
+    fig_height = fig_width * height / width
+    
+    fig, ax = plt.subplots(1, figsize=(fig_width, fig_height))
     ax.imshow(image_np)
 
     print(f"Detection results: {len(boxes)} objects found")
@@ -135,7 +147,6 @@ def visualize_detections(image_array, boxes, scores, class_ids, output_path=None
     for i, (box, score, class_id) in enumerate(zip(boxes, scores, class_ids)):
         xmin, ymin, xmax, ymax = box
 
-        height, width = image_np.shape[:2]
         xmin *= width
         xmax *= width
         ymin *= height
@@ -188,10 +199,10 @@ def process_directory(model, input_dir, output_dir, confidence_threshold=0.4, io
             base_name = os.path.splitext(filename)[0]
             output_path = os.path.join(output_dir, f"{base_name}_detection.png")
 
-            image_tensor, image_array = preprocess_image(image_path)
+            model_tensor, original_array = preprocess_image(image_path)
   
             start_time = time.time()
-            prediction = model.predict(image_tensor, verbose=0)[0]
+            prediction = model.predict(model_tensor, verbose=0)[0]
             inference_time = (time.time() - start_time) * 1000
             total_time += inference_time
             
@@ -201,7 +212,7 @@ def process_directory(model, input_dir, output_dir, confidence_threshold=0.4, io
                 prediction, confidence_threshold, iou_threshold
             )
 
-            visualize_detections(image_array, boxes, scores, classes, output_path, show_plot)
+            visualize_detections(original_array, boxes, scores, classes, output_path, show_plot)
             
         except Exception as e:
             print(f"Error processing image {image_path}: {str(e)}")
@@ -217,9 +228,9 @@ def process_single_image(model, image_path, output_path=None, confidence_thresho
     Process a single image and visualize the detection results.
     """
     try:
-        image_tensor, image_array = preprocess_image(image_path)
+        model_tensor, original_array = preprocess_image(image_path)
         start_time = time.time()
-        prediction = model.predict(image_tensor, verbose=0)[0]
+        prediction = model.predict(model_tensor, verbose=0)[0]
         inference_time = (time.time() - start_time) * 1000
         
         print(f"Inference completed in {inference_time:.2f} ms")
@@ -233,8 +244,8 @@ def process_single_image(model, image_path, output_path=None, confidence_thresho
             filename = os.path.basename(image_path)
             base_name = os.path.splitext(filename)[0]
             output_path = os.path.join(base_dir, f"{base_name}_detection.png")
-        
-        visualize_detections(image_array, boxes, scores, classes, output_path, show_plot)
+
+        visualize_detections(original_array, boxes, scores, classes, output_path, show_plot)
         
         return boxes, scores, classes
         
@@ -277,7 +288,5 @@ def main():
 if __name__ == "__main__":
     main()
     """
-        python .\test_model.py --model .\trained_models\custom_detector\final_model.keras --input
- ..\test1.jpg --conf_thresh 0.4 --iou_thresh 0 --show
-
+        python .\test_model.py --model .\trained_models\custom_detector\final_model.keras --input ..\test1.jpg --conf_thresh 0.4 --iou_thresh 0 --show
     """
